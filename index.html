@@ -3,272 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cuisin'Calc - Appli Vendeur</title>
+    <title>Cuisin'Calc Pro</title>
     <style>
         :root {
-            --primary: #2c3e50;
-            --accent: #e67e22;
-            --bg: #f5f6fa;
+            --primary: #1e293b;
+            --secondary: #3b82f6;
+            --bg: #f1f5f9;
             --card: #ffffff;
-            --text: #2f3640;
-            --success: #2ecc71;
+            --text: #334155;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        * { box-sizing: border-box; font-family: -apple-system, sans-serif; margin: 0; padding: 0; }
+        body { background-color: var(--bg); color: var(--text); padding: 10px; padding-bottom: 80px; }
+        header { background: var(--primary); color: white; padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px; }
+        .section { background: var(--card); padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid var(--secondary); }
+        .section h2 { font-size: 1.1rem; margin-bottom: 15px; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .input-group { display: flex; flex-direction: column; }
+        label { font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; color: #64748b; }
+        input, select { padding: 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.95rem; }
+        input:focus { outline: none; border-color: var(--secondary); }
+        .full-width { grid-column: span 2; }
+        
+        #dashboard {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: var(--primary); color: white;
+            padding: 15px; box-shadow: 0 -4px 10px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 5px; z-index: 100;
         }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            padding: 15px;
-            padding-bottom: 30px;
-        }
-
-        header {
-            background-color: var(--primary);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        header h1 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-
-        header p {
-            font-size: 0.85rem;
-            opacity: 0.8;
-        }
-
-        .module {
-            background: var(--card);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border-left: 5px solid var(--accent);
-        }
-
-        .module h2 {
-            font-size: 1.1rem;
-            color: var(--primary);
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .input-group {
-            margin-bottom: 12px;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #616161;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .input-field:focus {
-            border-color: var(--primary);
-        }
-
-        .select-field {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            background: white;
-        }
-
-        .result-box {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 12px;
-            margin-top: 15px;
-            border: 1px dashed #cbd5e0;
-        }
-
-        .result-line {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.95rem;
-            margin-bottom: 5px;
-        }
-
-        .result-line:last-child {
-            margin-bottom: 0;
-        }
-
-        .highlight {
-            font-weight: bold;
-            color: var(--accent);
-        }
-
-        .highlight-success {
-            font-weight: bold;
-            color: var(--success);
-        }
+        .dash-line { display: flex; justify-content: space-between; font-size: 0.9rem; }
+        .dash-total { font-size: 1.2rem; font-weight: bold; color: var(--success); display: flex; justify-content: space-between; margin-top: 5px; border-top: 1px solid #475569; padding-top: 5px;}
+        .dash-marge { font-weight: bold; color: #fbbf24; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>🍳 Cuisin'Calc</h1>
-        <p>Aide à la vente et calculs de rentabilité en direct</p>
+        <h1>📊 Cuisin'Calc Pro</h1>
+        <p style="font-size: 0.8rem; opacity: 0.8;">Devis complet & Rentabilité globale</p>
     </header>
 
-    <div class="module">
-        <h2>1. Remise & Prix Net</h2>
-        <div class="input-group">
-            <label>Prix Public Brut HT (€)</label>
-            <input type="number" id="m1_brut" class="input-field" placeholder="Ex: 8500" oninput="calculerModule1()">
-        </div>
-        <div class="input-group">
-            <label>Remise (%)</label>
-            <input type="number" id="m1_remise" class="input-field" placeholder="Ex: 15" oninput="calculerModule1()">
-        </div>
-        <div class="result-box">
-            <div class="result-line">Montant économisé : <span id="m1_res_remise" class="highlight">0.00 €</span></div>
-            <div class="result-line"><b>Prix Net Facturé HT :</b> <span id="m1_res_net" class="highlight-success">0.00 €</span></div>
-        </div>
-    </div>
-
-    <div class="module">
-        <h2>2. Marge & Taux de Marque</h2>
-        <div class="input-group">
-            <label>Prix de Vente HT (€)</label>
-            <input type="number" id="m2_vente" class="input-field" placeholder="Ex: 7225" oninput="calculerModule2()">
-        </div>
-        <div class="input-group">
-            <label>Coût d'Achat Usine HT (€)</label>
-            <input type="number" id="m2_achat" class="input-field" placeholder="Ex: 3900" oninput="calculerModule2()">
-        </div>
-        <div class="result-box">
-            <div class="result-line">Marge Brute HT : <span id="m2_res_marge" class="highlight">0.00 €</span></div>
-            <div class="result-line"><b>Taux de Marque :</b> <span id="m2_res_taux" class="highlight-success">0.0 %</span></div>
+    <div class="section">
+        <h2>1. Meubles & Sanitaire (Boiserie, Évier...)</h2>
+        <div class="grid">
+            <div class="input-group">
+                <label>Coût d'Achat (HT)</label>
+                <input type="number" id="meuble_achat" class="calc-input" placeholder="€" value="0">
+            </div>
+            <div class="input-group">
+                <label>Prix Vente Brut (HT)</label>
+                <input type="number" id="meuble_vente" class="calc-input" placeholder="€" value="0">
+            </div>
+            <div class="input-group full-width">
+                <label>Remise Accordée (%)</label>
+                <input type="number" id="meuble_remise" class="calc-input" placeholder="%" value="0">
+            </div>
+            <div class="input-group full-width">
+                <label>TVA Applicable</label>
+                <select id="meuble_tva" class="calc-input">
+                    <option value="0.10">10% (Logement +2 ans avec pose)</option>
+                    <option value="0.20">20% (Neuf ou sans pose)</option>
+                </select>
+            </div>
         </div>
     </div>
 
-    <div class="module">
-        <h2>3. Objectif d'Achat Max</h2>
-        <div class="input-group">
-            <label>Budget / Prix de Vente Visé HT (€)</label>
-            <input type="number" id="m3_vente" class="input-field" placeholder="Ex: 6000" oninput="calculerModule3()">
-        </div>
-        <div class="input-group">
-            <label>Taux de Marque Exigé (%)</label>
-            <input type="number" id="m3_taux" class="input-field" placeholder="Ex: 42" oninput="calculerModule3()">
-        </div>
-        <div class="result-box">
-            <div class="result-line">Marge requise au min : <span id="m3_res_marge" class="highlight">0.00 €</span></div>
-            <div class="result-line"><b>Prix d'Achat Max Usine HT :</b> <span id="m3_res_achat" class="highlight-success">0.00 €</span></div>
-        </div>
-    </div>
-
-    <div class="module">
-        <h2>4. Trouver le Coefficient</h2>
-        <div class="input-group">
-            <label>Coût d'Achat Usine HT (€)</label>
-            <input type="number" id="m4_achat" class="input-field" placeholder="Ex: 3190" oninput="calculerModule4()">
-        </div>
-        <div class="input-group">
-            <label>Prix de Vente Net HT (€)</label>
-            <input type="number" id="m4_vente" class="input-field" placeholder="Ex: 5800" oninput="calculerModule4()">
-        </div>
-        <div class="result-box">
-            <div class="result-line"><b>Coefficient Multiplicateur :</b> <span id="m4_res_coeff" class="highlight-success">0.000</span></div>
+    <div class="section">
+        <h2>2. Électroménager</h2>
+        <div class="grid">
+            <div class="input-group">
+                <label>Coût d'Achat (HT)</label>
+                <input type="number" id="electro_achat" class="calc-input" placeholder="€" value="0">
+            </div>
+            <div class="input-group">
+                <label>Prix Vente Net (HT)</label>
+                <input type="number" id="electro_vente" class="calc-input" placeholder="€" value="0">
+            </div>
+            <div class="input-group full-width">
+                <label>TVA Applicable</label>
+                <select id="electro_tva" class="calc-input">
+                    <option value="0.20">20% (Taux standard obligatoire)</option>
+                </select>
+            </div>
         </div>
     </div>
 
-    <div class="module">
-        <h2>5. Calculateur TVA (HT ⇆ TTC)</h2>
-        <div class="input-group">
-            <label>Montant de base (€)</label>
-            <input type="number" id="m5_montant" class="input-field" placeholder="Entrez un prix..." oninput="calculerModule5()">
+    <div class="section">
+        <h2>3. Pose & Livraison</h2>
+        <div class="grid">
+            <div class="input-group">
+                <label>Coût Sous-traitant (HT)</label>
+                <input type="number" id="service_achat" class="calc-input" placeholder="€" value="0">
+            </div>
+            <div class="input-group">
+                <label>Prix Facturé Client (HT)</label>
+                <input type="number" id="service_vente" class="calc-input" placeholder="€" value="0">
+            </div>
+            <div class="input-group full-width">
+                <label>TVA Applicable</label>
+                <select id="service_tva" class="calc-input">
+                    <option value="0.10">10% (Lié aux meubles rénovation)</option>
+                    <option value="0.20">20% (Standard)</option>
+                </select>
+            </div>
         </div>
-        <div class="input-group">
-            <label>Taux de TVA</label>
-            <select id="m5_tva" class="select-field" onchange="calculerModule5()">
-                <option value="1.10">10 % (Rénovation / Pose incluse)</option>
-                <option value="1.20">20 % (Neuf / Électro seul sans pose)</option>
-            </select>
+    </div>
+
+    <div id="dashboard">
+        <div class="dash-line">
+            <span>Total Vente HT :</span>
+            <span id="res_total_ht">0.00 €</span>
         </div>
-        <div class="result-box">
-            <div class="result-line">Si le montant de base est HT ➔ <b>Prix TTC :</b> <span id="m5_res_ttc" class="highlight">0.00 €</span></div>
-            <div class="result-line">Si le montant de base est TTC ➔ <b>Prix HT :</b> <span id="m5_res_ht" class="highlight-success">0.00 €</span></div>
+        <div class="dash-line">
+            <span>Taux de Marque Global :</span>
+            <span id="res_taux_marque" class="dash-marge">0.00 %</span>
+        </div>
+        <div class="dash-line">
+            <span>Marge Brute Totale (HT) :</span>
+            <span id="res_marge_euros" class="dash-marge">0.00 €</span>
+        </div>
+        <div class="dash-total">
+            <span>TOTAL À PAYER (TTC) :</span>
+            <span id="res_total_ttc">0.00 €</span>
         </div>
     </div>
 
     <script>
-        // Fonctions utilitaires pour formater les nombres
-        function fmt(nb) { return nb.toFixed(2) + " €"; }
+        // Sélectionne tous les inputs pour recalculer en temps réel
+        document.querySelectorAll('.calc-input').forEach(input => {
+            input.addEventListener('input', calculerDevis);
+            input.addEventListener('change', calculerDevis);
+        });
 
-        // Module 1 : Remise
-        function calculerModule1() {
-            let brut = parseFloat(document.getElementById('m1_brut').value) || 0;
-            let remise = parseFloat(document.getElementById('m1_remise').value) || 0;
-            let mntRemise = brut * (remise / 100);
-            let net = brut - mntRemise;
-            document.getElementById('m1_res_remise').innerText = fmt(mntRemise);
-            document.getElementById('m1_res_net').innerText = fmt(net);
+        function getVal(id) {
+            return parseFloat(document.getElementById(id).value) || 0;
         }
 
-        // Module 2 : Marge & Taux de marque
-        function calculerModule2() {
-            let vente = parseFloat(document.getElementById('m2_vente').value) || 0;
-            let achat = parseFloat(document.getElementById('m2_achat').value) || 0;
-            let marge = vente - achat;
-            let taux = vente > 0 ? (marge / vente) * 100 : 0;
-            document.getElementById('m2_res_marge').innerText = fmt(marge);
-            document.getElementById('m2_res_taux').innerText = taux.toFixed(1) + " %";
-        }
+        function calculerDevis() {
+            // 1. Calculs Meubles
+            let m_achat = getVal('meuble_achat');
+            let m_vente_brut = getVal('meuble_vente');
+            let m_remise = getVal('meuble_remise');
+            let m_tva_taux = getVal('meuble_tva');
+            
+            let m_vente_net = m_vente_brut * (1 - (m_remise / 100));
+            let m_tva = m_vente_net * m_tva_taux;
 
-        // Module 3 : Achat Max
-        function calculerModule3() {
-            let vente = parseFloat(document.getElementById('m3_vente').value) || 0;
-            let taux = parseFloat(document.getElementById('m3_taux').value) || 0;
-            let achatMax = vente * (1 - (taux / 100));
-            let margeMin = vente - achatMax;
-            document.getElementById('m3_res_marge').innerText = fmt(margeMin);
-            document.getElementById('m3_res_achat').innerText = fmt(achatMax);
-        }
+            // 2. Calculs Electro
+            let e_achat = getVal('electro_achat');
+            let e_vente = getVal('electro_vente');
+            let e_tva_taux = getVal('electro_tva');
+            let e_tva = e_vente * e_tva_taux;
 
-        // Module 4 : Coefficient
-        function calculerModule4() {
-            let achat = parseFloat(document.getElementById('m4_achat').value) || 0;
-            let vente = parseFloat(document.getElementById('m4_vente').value) || 0;
-            let coeff = achat > 0 ? (vente / achat) : 0;
-            document.getElementById('m4_res_coeff').innerText = coeff.toFixed(3);
-        }
+            // 3. Calculs Services
+            let s_achat = getVal('service_achat');
+            let s_vente = getVal('service_vente');
+            let s_tva_taux = getVal('service_tva');
+            let s_tva = s_vente * s_tva_taux;
 
-        // Module 5 : TVA
-        function calculerModule5() {
-            let montant = parseFloat(document.getElementById('m5_montant').value) || 0;
-            let tvaCoeff = parseFloat(document.getElementById('m5_tva').value);
-            let passageTtc = montant * tvaCoeff;
-            let passageHt = montant / tvaCoeff;
-            document.getElementById('m5_res_ttc').innerText = fmt(passageTtc);
-            document.getElementById('m5_res_ht').innerText = fmt(passageHt);
+            // TOTAUX
+            let total_achat = m_achat + e_achat + s_achat;
+            let total_vente_ht = m_vente_net + e_vente + s_vente;
+            let total_tva = m_tva + e_tva + s_tva;
+            let total_ttc = total_vente_ht + total_tva;
+
+            // RENTABILITÉ
+            let marge_globale = total_vente_ht - total_achat;
+            let taux_marque = total_vente_ht > 0 ? (marge_globale / total_vente_ht) * 100 : 0;
+
+            // AFFICHAGE FORMATÉ
+            document.getElementById('res_total_ht').innerText = total_vente_ht.toFixed(2) + ' €';
+            document.getElementById('res_total_ttc').innerText = total_ttc.toFixed(2) + ' €';
+            document.getElementById('res_marge_euros').innerText = marge_globale.toFixed(2) + ' €';
+            document.getElementById('res_taux_marque').innerText = taux_marque.toFixed(1) + ' %';
         }
     </script>
 </body>
